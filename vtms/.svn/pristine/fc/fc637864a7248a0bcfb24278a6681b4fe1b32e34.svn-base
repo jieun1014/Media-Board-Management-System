@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- SQL만 집어넣어 놓음. -->
+<mapper namespace="com.transfer.video.vtms.video.TransferHistoryMapper">
+	<select id="selectAll" parameterType="com.transfer.video.vtms.video.TransferHistory" resultType="com.transfer.video.vtms.video.TransferHistory">
+		SELECT
+			 NO
+		    ,DEVICE_IP
+		    ,NAME
+		    ,PLACE
+		    ,VIDEO_NAME
+		    ,TO_CHAR(TRANSFER_DATE, 'YYYY-MM-DD HH24:MI:SS') AS "TRANSFER_DATE"
+		FROM 
+			 DEVICE
+			,TRANSFER_HISTORY
+		WHERE 
+			IP = DEVICE_IP
+		<if test="place != null and place neq ''.toString()">
+		 	AND PLACE = #{place}
+		</if>
+		<if test="deviceIp != null and deviceIp neq ''.toString()">
+			AND UPPER(DEVICE_IP) LIKE ('%' || UPPER(#{deviceIp}) || '%')
+		</if>
+		ORDER BY 
+			TRANSFER_DATE DESC
+	</select>
+	
+	<select id="select" parameterType="com.transfer.video.vtms.video.TransferHistory" resultType="com.transfer.video.vtms.video.TransferHistory">
+		SELECT
+		     DEVICE_IP
+		    ,NAME
+		    ,PLACE
+		    ,VIDEO_NAME
+		    ,TRANSFER_DATE
+		    ,FILE_SIZE
+		    ,PLAY_TIME
+		    ,NOTE
+		FROM 
+		     DEVICE
+		    ,TRANSFER_HISTORY
+		WHERE
+		    IP = DEVICE_IP
+		    AND
+		    NO=#{no}
+	</select>
+	
+	<insert id="insert" parameterType="com.transfer.video.vtms.video.TransferHistory">
+		INSERT INTO TRANSFER_HISTORY
+		VALUES(
+			 (SELECT 
+			 	COUNT(NO) + 1
+			 FROM 
+			 	TRANSFER_HISTORY)
+			,#{deviceIp}
+			,#{videoName}
+			,SYSDATE
+			,#{fileSize}
+			,#{playTime}
+			,#{note}
+		)
+	</insert>
+	
+	<select id="selectAllPlace" resultType="String">
+		SELECT
+		    PLACE
+		FROM
+		    TRANSFER_PLACE
+	</select>
+</mapper>

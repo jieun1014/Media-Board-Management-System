@@ -1,0 +1,39 @@
+package com.transfer.video.vtms.device;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+public class DeviceInfoServiceImpl implements DeviceInfoService {
+	@Autowired
+	DeviceMapper deviceMapper;
+	
+	@Override
+	public List<Device> inquiryAllDevice(Device device) {
+		return this.deviceMapper.inquiryAll(device);
+	}
+
+	@Override
+	public Device inquiryDevice(String ip) {
+		Device device = null;
+		
+		if (ip != null 
+				&& !"".equals(ip)) {
+			device = this.deviceMapper.inquiry(ip);
+		}
+		
+		return device;
+	}
+
+	@Override
+	public void registerDevice(Device device) {
+	}
+
+	@Override
+	public void updateDevice(Device device, VideoInfo videoInfo) {
+	}
+
+	@Override
+	public void deleteDevice(String ip) {
+	}
+}

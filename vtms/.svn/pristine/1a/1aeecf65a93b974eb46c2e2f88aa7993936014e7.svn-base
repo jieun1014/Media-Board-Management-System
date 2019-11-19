@@ -1,0 +1,7 @@
+package com.transfer.video.vtms.video;
+
+import java.io.Serializable;
+
+public class TransferHistory implements Serializable {
+	
+}

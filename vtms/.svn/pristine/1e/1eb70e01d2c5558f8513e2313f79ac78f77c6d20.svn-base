@@ -1,0 +1,155 @@
+package com.transfer.video.vtms.device;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.transfer.video.vtms.video.TransferHistory;
+import com.transfer.video.vtms.video.TransferHistoryMapper;
+
+@Service
+public class DeviceInfoServiceImpl implements DeviceInfoService {
+	@Autowired
+	DeviceMapper deviceMapper;
+	
+	@Autowired 
+	TransferHistoryMapper transferHistoryMapper;
+
+	@Override
+	public List<Device> getDevicesInfo(Device device) {
+		return this.deviceMapper.selectAll(device);
+	}
+
+	@Override
+	public Device getDeviceInfo(Device device) {
+		String ip = device.getIp();
+
+		if (ip != null && !"".equals(ip)) {
+			return this.deviceMapper.select(device);
+		}
+
+		return new Device();
+	}
+
+	@Override
+	public boolean addDeviceInfo(Device device) {
+		if (device.getIp() != null 
+				&& device.getHostName() != null 
+				&& device.getAccessKey() != null
+				&& !"".equals(device.getIp()) 
+				&& !"".equals(device.getHostName())
+				&& !"".equals(device.getAccessKey())) {
+
+			Device resultDevice = this.deviceMapper.select(new Device(device.getIp()));
+
+			if (resultDevice == null) {
+				this.deviceMapper.insert(device);
+
+				return true;
+			} else {
+				if (device.getAccessKey().equals(resultDevice.getAccessKey()) 
+						&& "N".equals(resultDevice.getStatus())) {
+					this.deviceMapper.update(new Device()
+												.ip(device.getIp())
+												.status("Y"));
+
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+
+	@Override
+	public void editDeviceInfo(Device parameter, File video, TransferHistory transferHistory)
+			throws Exception {
+		if (video != null) {
+			if (video.exists()) {
+				Device device = this.deviceMapper.select(parameter);
+				
+				Socket client = null;
+				OutputStream out = null;
+				FileInputStream inFile = null;
+				try {
+					client = new Socket(parameter.getIp(), 80);
+					
+					out = client.getOutputStream();
+					inFile = new FileInputStream(video);
+					
+					StringBuffer sb = new StringBuffer();
+					String accessKey = device.getAccessKey();
+					
+					sb.append(accessKey);
+					String extension = video.getName().substring(video.getName().lastIndexOf("."));
+					sb.append(extension);
+					byte[] ac = sb.toString().getBytes();
+					out.write(ac);
+					
+					byte[] buffer = new byte[1000];
+					int read = 0;
+					while (true) {
+						read = inFile.read(buffer, 0, 1000);
+						if (read < 0) {
+							break;
+						}
+						
+						out.write(buffer, 0, read);
+					}
+					out.flush();
+					
+					transferHistory.setDeviceIp(parameter.getIp());
+					transferHistory.setVideoName(video.getName());
+					transferHistory.setFileSize(video.length() / 1000000.0);
+					
+					this.transferHistoryMapper.insert(transferHistory);
+					
+				} catch(Exception e) {
+					throw e;
+				} finally {
+					try {
+						if (out != null) {
+							out.close();
+						}
+						if (inFile != null) {
+							inFile.close();
+						}
+						if (client != null) {
+							client.close();
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				
+			}
+		}
+		try {
+			this.deviceMapper.update(parameter);
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+
+	@Override
+	public boolean removeDeviceInfo(String ip) {
+		if (ip != null 
+				&& !"".equals(ip)) {
+			Device device = new Device();
+			device.setIp(ip);
+			device.setStatus("N");
+
+			this.deviceMapper.update(device);
+			
+			return true;
+		}
+		
+		return false;
+	}
+}

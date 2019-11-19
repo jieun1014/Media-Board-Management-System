@@ -1,0 +1,46 @@
+package com.transfer.video.vtms.video;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+@Controller
+public class TransferHistoryController {
+	@Autowired
+	TransferHistoryService transferHistoryService;
+	
+	@RequestMapping(value = "/transfer/history", method = RequestMethod.GET)
+	public ModelAndView getTransferHistories() {
+		return new ModelAndView("/transfer/history/list");
+	}
+	
+	@RequestMapping(value = "/transfer/history/{ip}/{place}")
+	public ModelAndView getTransferHistories(String ip, String place) {
+		TransferHistory t = new TransferHistory();
+		t.setDeviceIp(ip);
+		t.setPlace(place);
+		
+		List<TransferHistory> transferHistories = this.transferHistoryService.getTransferHistories(t);
+		
+		ModelAndView mav = new ModelAndView("transfer/hisotry/list");
+		mav.addObject("transferHistories", transferHistories);
+		
+		return mav;	
+	}
+	
+	@RequestMapping(value = "/transfer/history/{no}")
+	public ModelAndView getTransferHistory(int no) {
+		TransferHistory t = new TransferHistory();
+		t.setNo(no);
+		
+		TransferHistory transferHistory = this.transferHistoryService.getTransferHistory(t);
+		
+		ModelAndView mav = new ModelAndView("/transfer/history/detail");
+		
+		return mav;
+	}
+}

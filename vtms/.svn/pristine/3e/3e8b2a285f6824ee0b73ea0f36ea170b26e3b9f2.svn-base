@@ -1,0 +1,5 @@
+package com.transfer.video.vtms.device;
+
+public class Device {
+
+}

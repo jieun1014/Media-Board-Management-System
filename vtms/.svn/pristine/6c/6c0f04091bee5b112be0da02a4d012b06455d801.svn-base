@@ -1,0 +1,87 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>영상 파일 전송 관리 시스템</title>
+</head>
+<head>
+	<meta charset="UTF-8">
+	<title>영상 파일 전송 관리 시스템</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+	<body>
+		<h1>영상 파일 전송 관리 시스템</h1>
+		<a href="<%= this.getServletContext().getContextPath()%>/device">디바이스 정보 관리</a>
+		<a href="<%= this.getServletContext().getContextPath()%>/transfer/history">전송 이력</a>
+		<a href="<%= this.getServletContext().getContextPath()%>/logout">로그아웃</a>
+		<hr>
+		<h1>전송 이력</h1><hr><br>
+		
+		장소 :
+			<select id="place">
+				<option value="">전체</option>
+				<c:forEach var="place" items="${transferPlaces}">
+					<option value="${place}">${place}</option>
+				</c:forEach>
+			</select> 
+
+		IP : 
+			<input type="text" id="deviceIp" />
+			<input type="button" value="검색" onclick="drawTable()" style="float:right"><hr><br>
+			<div id="tables"></div>
+	</body>
+	
+	<script>
+		$(document).ready(function(){
+			drawTable();
+		});
+	
+		function drawTable() {
+			$.ajax({
+					url : "${pageContext.request.contextPath}/transfer/history",
+					type : "get",
+					headers : {
+						"Content-Type" : "application/json;charset=utf-8"
+					},
+					data : {
+						place : $("#place").val(),
+						deviceIp : $("#deviceIp").val()
+					},
+					dataType : "json",
+					success : function(data){					
+						var text = '';
+					
+						text += "<table border=\"1\">";
+		    			text += "	<tr>";
+		    			text += "		<td>번호</td>";
+		    			text += "		<td>IP</td>";
+		    			text += "		<td>디바이스 명</td>";
+		    			text += "		<td>장소</td>";
+		    			text += "		<td>영상 파일 명</td>";
+		    			text += "		<td>전송 일시</td>";
+		    			text += "	</tr>";
+										
+		    			for (var i = 0; i < data.length; i++) {
+		    				var name = data[i].name != null ? data[i].name : "";
+		    				var place = data[i].place != null ? data[i].place : "";
+		    				text += "	<tr>";
+			    			text += "		<td><a href=\"${pageContext.request.contextPath}/transfer/history/" + data[i].no + "\">" + (i + 1) + "</td>";
+			    			text += "		<td>" + data[i].deviceIp + "</td>";
+			    			text += "		<td>" + name + "</td>";
+			    			text += "		<td>" + place + "</td>";
+			    			text += "		<td>" + data[i].videoName + "</td>";
+			    			text += "		<td>" + data[i].transferDate + "</td>";
+			    			text += "	</tr>";
+		    			}
+		    			
+		    			text += "</table>";
+						document.getElementById("tables").innerHTML = text;
+					}				
+			})	
+		};
+	</script>
+</html>

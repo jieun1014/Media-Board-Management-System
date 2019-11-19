@@ -1,0 +1,165 @@
+package com.transfer.video.vtms.device;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.transfer.video.vtms.video.TransferHistory;
+import com.transfer.video.vtms.video.TransferHistoryMapper;
+
+@Service
+public class DeviceInfoServiceImpl implements DeviceInfoService {
+	@Autowired
+	DeviceMapper deviceMapper;
+	
+	@Autowired 
+	TransferHistoryMapper transferHistoryMapper;
+
+	@Override
+	public List<Device> getDevicesInfo(Device device) {
+		// 로그인 후 처음 보는 목록조회 화면일 경우
+		// 상태가 장애인 목록만을 보여준다.
+		return this.deviceMapper.selectAll(device);
+	}
+
+	@Override
+	public Device getDeviceInfo(Device device) {
+		String ip = device.getIp();
+
+		if (ip != null && !"".equals(ip)) {
+			return this.deviceMapper.select(device);
+		}
+
+		return new Device();
+	}
+
+	@Override
+	public boolean addDeviceInfo(Device device) {
+		// 1. 에이전트로부터 받은 디바이스 정보가 존재하는가?
+		System.out.println(device.getIp() + " / " +  device.getHostName() + " / " + device.getAccessKey());
+		if (device.getIp() != null 
+				&& device.getHostName() != null 
+				&& device.getAccessKey() != null
+				&& !"".equals(device.getIp()) 
+				&& !"".equals(device.getHostName())
+				&& !"".equals(device.getAccessKey())) {
+			// 2. 예-> 디바이스 정보를 상세 조회한다.
+			System.out.println("// 2. 예-> 디바이스 정보를 상세 조회한다.");
+			Device resultDevice = this.deviceMapper.select(new Device(device.getIp()));
+			// 3. 조회 결과가 존재하지 않는가?
+			if (resultDevice == null) {
+				// 4. 예-> 디바이스 정보를 등록한다.
+				System.out.println("// 4. 예-> 디바이스 정보를 등록한다.");
+				this.deviceMapper.insert(device);
+				return true;
+			} else {
+				System.out.println("// 5. 아니오-> 접근키가 일치하고, 상태 값이 'n'인가?");
+				// 5. 아니오-> 접근키가 일치하고, 상태 값이 'n'인가?
+				if (device.getAccessKey().equals(resultDevice.getAccessKey()) 
+						&& "N".equals(resultDevice.getStatus())) {
+					// 6. 디바이스 정보를 수정한다.
+					System.out.println("// 6. 디바이스 정보를 수정한다.");
+					this.deviceMapper.update(new Device()
+												.ip(device.getIp())
+												.status("Y"));
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+
+	@Override
+	public boolean editDeviceInfo(Device parameter, File video, TransferHistory transferHistory) {
+		// 1. 영상 파일을 첨부했는가?
+		if (video.exists()) {
+			// 2. 디바이스 정보를 상세 조회한다.
+			Device device = this.deviceMapper.select(parameter);
+			
+			Socket client = null;
+			OutputStream out = null;
+			FileInputStream inFile = null;
+			try {
+				// 예 : 3. 영상 파일을 전송한다.
+				client = new Socket(parameter.getIp(), 80);
+
+				out = client.getOutputStream();
+				inFile = new FileInputStream(new File(video.getAbsolutePath()));
+
+				StringBuffer sb = new StringBuffer();
+				String accessKey = device.getAccessKey();
+
+				sb.append(accessKey);
+				if (accessKey.length() < 20) {
+					int zeroCount = 20 - accessKey.length();
+					for (int i = 0; i < zeroCount; i++) {
+						sb.append(" ");
+					}
+				}
+				byte[] ac = sb.toString().getBytes();
+				out.write(ac);
+
+				byte[] buffer = new byte[1000];
+				int read = 0;
+				while (true) {
+					read = inFile.read(buffer, 0, 1000);
+					if (read < 0) {
+						break;
+					}
+
+					out.write(buffer, 0, read);
+				}
+				out.flush();
+
+				// 4. 전송 이력을 등록한다.
+				transferHistory.setDeviceIp(parameter.getIp());
+				transferHistory.setVideoName(video.getName());
+				transferHistory.setFileSize(video.length() / 1000000.0);
+				
+				this.transferHistoryMapper.insert(transferHistory);
+			} catch(Exception e) {
+				// 5. 영상 전송 에실패했을 경우 false값을 반환한다.
+				return false;
+			} finally {
+				try {
+					if (out != null) {
+						out.close();
+					}
+					if (inFile != null) {
+						inFile.close();
+					}
+					if (client != null) {
+						client.close();
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+				
+		}
+		// 6. 수정정보를 반영한다.
+		this.deviceMapper.update(parameter);
+		
+		return true;
+	}
+
+	@Override
+	public void removeDeviceInfo(String ip) {
+		// 1. ip가 존재하는가?
+		if (ip != null 
+				&& !"".equals(ip)) {
+			// 2. 디바이스 상태를 수정한다.
+			Device device = new Device();
+			device.setStatus("N");
+			device.setIp(ip);
+
+			this.deviceMapper.update(device);
+		}
+	}
+}

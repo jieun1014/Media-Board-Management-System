@@ -1,0 +1,77 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>영상 파일 전송 관리 시스템</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	</head>
+	<body>
+		<h1>영상 파일 전송 관리 시스템</h1>
+		<a href="<%= this.getServletContext().getContextPath()%>/device">디바이스 정보 관리</a>
+		<a href="<%= this.getServletContext().getContextPath()%>/transfer/history">전송 이력</a>
+		<a href="<%= this.getServletContext().getContextPath()%>/logout">로그아웃</a>
+		<hr>
+		디바이스 정보 관리
+		<hr>
+		접속 상태 : 
+			<select id="connStatus">
+				<option value="A">전체</option>
+				<option value="N">장애</option>
+			</select>
+			<input type="button" value="검색" onclick="drawTable()" style="float:right">
+		<br/>
+		<div id="tables"> 
+		</div>
+		
+	</body>
+	<script>
+		function drawTable() {
+			$.ajax({
+		        url: "${pageContext.request.contextPath}/device",
+		        type: "get",
+		        headers : {
+		        	"Content-Type" : "application/json;charset=utf-8"
+		        },
+		        data: { 
+		        	connStatus : $("#connStatus").val()
+		        },
+		        dataType : "json",
+		        success: function(data) {
+		        	var text = '';
+
+		        	text += "<table border=\"1\">";
+		        	text += "<tr>";
+		        	text += "	<td>번호</td>";
+		        	text += "	<td>IP</td>";
+		        	text += "	<td>장소</td>";
+		        	text += "	<td>이름</td>";
+		        	text += "	<td>전송 일시</td>";
+		        	text += "	<td>등록 일시</td>";
+		        	text += "	<td>접속 상태</td>";
+		        	text += "</tr>";
+		        	
+		        	for(var i = 0; i < data.length; i++) {
+		        		text += "<tr>";
+		        		text += "<td>" + (i + 1) + "</td>";
+		        		text += "<td><a href=\"${pageContext.request.contextPath}/device/" + data[i].ip + "\">" + data[i].ip + "</a></td>";
+		        		text += "<td>" + data[i].place + "</td>";
+		        		text += "<td>" + data[i].name + "</td>";
+		        		if (data[i].transferDate == null) {
+		        			text += "<td></td>";	   
+		        		} else {
+			        		text += "<td>" + data[i].transferDate + "</td>";	        			
+		        		}
+		        		text += "<td>" + data[i].registerDate + "</td>";
+		        		text += "<td>" + data[i].connStatus + "</td>";
+		        		text += "</tr>";
+		        	}
+		        	
+		        	text += "</table>";
+		        	document.getElementById("tables").innerHTML = text;
+		        }
+		    })
+		};
+	</script>
+</html>

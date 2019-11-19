@@ -1,0 +1,26 @@
+package com.transfer.video.vtms.device;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+@Controller
+public class DeviceInfoController {
+	@Autowired
+	DeviceInfoService deviceInfoService;
+	
+	
+	@RequestMapping(value = "/device/list", method = RequestMethod.GET)
+	public ModelAndView list(Device device) {
+		ModelAndView mav = new ModelAndView("/device/list");
+		
+		List<Device> devices = this.deviceInfoService.inquiryAllDevice(device);
+		mav.addObject("devices", devices);
+		
+		return mav;
+	}
+}

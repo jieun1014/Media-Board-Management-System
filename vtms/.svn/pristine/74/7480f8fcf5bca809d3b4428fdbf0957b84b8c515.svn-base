@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- SQL만 집어넣어 놓음. -->
+<mapper namespace="com.transfer.video.vtms.video.TransferHistoryMapper">
+	<select id="inquiryAll" parameterType="com.transfer.video.vtms.video.TransferHistory" resultType="com.transfer.video.vtms.video.TransferHistory">
+		SELECT
+		     TY.NO
+		    ,TY.DEVICE_IP
+		    ,DE.NAME
+		    ,DE.PLACE
+		    ,TY.VIDEO_NAME
+		    ,TY.TRANSFER_DATE
+		FROM
+		    DEVICE DE
+		    NATURAL JOIN
+		    TRANSFER_HISTORY TY
+	</select>
+	
+	<select id="inquiry" parameterType="com.transfer.video.vtms.video.TransferHistory" resultType="com.transfer.video.vtms.video.TransferHistory">
+		SELECT   TY.DEVICE_IP
+		        ,DE.NAME
+		        ,DE.PLACE
+		        ,TY.VIDEO_NAME
+		        ,TY.TRANSFER_DATE
+		        ,TY.FILESIZE
+		        ,TY.PLAY_TIME
+		        ,TY.NOTE
+		FROM
+		         DEVICE DE
+		        ,TRANSFER_HISTORY TY
+	</select>
+</mapper>

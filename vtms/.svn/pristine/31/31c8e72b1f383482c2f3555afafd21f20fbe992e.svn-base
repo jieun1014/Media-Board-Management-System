@@ -1,0 +1,5 @@
+package com.transfer.video.vtms.agent;
+
+public interface AgentMapper {
+	public Agent inquiry();	
+}

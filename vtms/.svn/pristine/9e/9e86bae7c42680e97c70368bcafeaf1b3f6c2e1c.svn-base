@@ -1,0 +1,12 @@
+package com.transfer.video.vtms.device;
+
+import java.io.File;
+import java.util.List;
+
+public interface DeviceInfoService {
+	public List<Device> getDevicesInfo(Device device);
+	public Device getDeviceInfo(Device device);
+	public void addDeviceInfo(Device device);
+	public boolean editDeviceInfo(Device device, File video, String note, int playTime);	
+	public void removeDeviceInfo(String ip);	
+}

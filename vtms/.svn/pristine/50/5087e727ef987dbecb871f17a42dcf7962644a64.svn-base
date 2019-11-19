@@ -1,0 +1,7 @@
+package com.transfer.video.vtms.agent;
+
+public interface AccessKeyMapper {
+	public String inquiry(String accesskey);	
+	public void register(Agent agent);	
+
+}

@@ -1,0 +1,13 @@
+package com.transfer.video.vtms.device;
+
+import java.util.List;
+
+public interface DeviceMapper {
+	List<Device> inquiryAll(Device device);	
+	Device inquiry(String ip);	
+	void register(Device device);
+	void update(Device device);	
+	void updateByAuto(List<Device> devices);	
+	void updateByManual(Device device);	
+	void delete(String ip);
+}

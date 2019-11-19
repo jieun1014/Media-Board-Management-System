@@ -1,0 +1,6 @@
+package com.transfer.video.vtms.agent;
+
+public interface AgentService {
+	public void transferDevice();
+
+}

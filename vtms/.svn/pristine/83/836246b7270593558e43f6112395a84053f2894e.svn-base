@@ -1,0 +1,53 @@
+package com.transfer.video.vtms.device;
+
+import org.springframework.web.multipart.MultipartFile;
+
+public class VideoInfo {
+	private String videoName;
+	private String videoFile;
+	private String accessKey;
+	private MultipartFile multipartFile;
+
+	public VideoInfo() {
+	}
+
+	public VideoInfo(String videoName, String videoFile, String accessKey, MultipartFile multipartFile) {
+		this.videoName = videoName;
+		this.videoFile = videoFile;
+		this.accessKey = accessKey;
+		this.multipartFile = multipartFile;
+	}
+
+	public String getVideoName() {
+		return videoName;
+	}
+
+	public void setVideoName(String videoName) {
+		this.videoName = videoName;
+	}
+
+	public String getVideoFile() {
+		return videoFile;
+	}
+
+	public void setVideoFile(String videoFile) {
+		this.videoFile = videoFile;
+	}
+
+	public String getAccessKey() {
+		return accessKey;
+	}
+
+	public void setAccessKey(String accessKey) {
+		this.accessKey = accessKey;
+	}
+
+	public MultipartFile getMultipartFile() {
+		return multipartFile;
+	}
+
+	public void setMultipartFile(MultipartFile multipartFile) {
+		this.multipartFile = multipartFile;
+	}
+
+}

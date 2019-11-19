@@ -1,0 +1,7 @@
+package com.transfer.video.vtms.device;
+
+public interface DeviceConnStatusService {
+	void updateConnStatusByAuto();
+	
+	void updateConnStatusByManual(Device device);
+}

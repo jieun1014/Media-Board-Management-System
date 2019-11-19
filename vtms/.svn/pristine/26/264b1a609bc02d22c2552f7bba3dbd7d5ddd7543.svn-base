@@ -1,0 +1,5 @@
+package com.transfer.video.vtms.common;
+
+public interface AccountMapper {
+	public Account inquiry(Account account);
+}

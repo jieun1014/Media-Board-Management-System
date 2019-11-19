@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.transfer.video.vtms.device.DeviceMapper">
+	<select id="selectAll" parameterType="com.transfer.video.vtms.device.Device" resultType="com.transfer.video.vtms.device.Device">
+		SELECT 
+			IP
+		   ,NAME
+           ,TO_CHAR((SELECT MAX(TRANSFER_DATE) FROM TRANSFER_HISTORY WHERE DEVICE_IP = IP),'YYYY-MM-DD HH24:MI:SS') AS "TRANSFER_DATE"
+		   ,HOST_NAME     
+           ,PLACE
+           ,TO_CHAR(REGISTER_DATE, 'YYYY-MM-DD HH24:MI:SS') AS "REGISTER_DATE"          
+           ,CONN_STATUS	
+		FROM DEVICE
+		WHERE STATUS = 'Y'
+		<if test="connStatus == 'N'">
+		 	AND CONN_STATUS = #{connStatus}
+		</if>
+		ORDER BY REGISTER_DATE DESC
+	</select>
+	<select id="select" parameterType="com.transfer.video.vtms.device.Device" resultType="com.transfer.video.vtms.device.Device">
+		SELECT 
+			  IP
+			, HOST_NAME
+			, PLACE
+			, NAME
+			, TO_CHAR((SELECT MAX(TRANSFER_DATE) FROM TRANSFER_HISTORY WHERE DEVICE_IP = IP),'YYYY-MM-DD HH24:MI:SS') AS "TRANSFER_DATE"
+         	, REGISTER_DATE, CONN_STATUS
+		FROM DEVICE 
+		WHERE STATUS = 'Y' 
+			AND IP = #{ip}
+	</select>
+	
+	<update id="update" parameterType="com.transfer.video.vtms.device.Device">
+			UPDATE DEVICE 
+			SET 
+				<if test="place != null">
+				 	PLACE=#{place}
+				 	<if test="name != null">
+				 		,
+				 	</if>
+				</if>
+				
+				<if test="name != null">
+					NAME='I_001'
+					<if test="connStatus != null and connStatus !=''">
+						,
+					</if>			 	
+				</if>
+				
+				<if test="connStatus != null and connStatus !=''">
+					CONN_STATUS=#{connStatus}
+				</if>
+			WHERE IP=#{ip}
+	</update>
+	
+	<delete id="delete" parameterType="java.lang.String">
+	</delete>
+</mapper>

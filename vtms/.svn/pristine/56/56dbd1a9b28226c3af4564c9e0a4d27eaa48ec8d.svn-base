@@ -1,0 +1,7 @@
+package com.transfer.video.vtms.agent;
+
+public class AgentServiceImpl implements AgentService {
+	@Override
+	public void transferDevice() {
+	}
+}

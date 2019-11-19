@@ -1,0 +1,109 @@
+package com.transfer.video.vtms.device;
+
+import java.util.Iterator;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+
+import com.transfer.video.vtms.video.TransferHistory;
+
+@Service
+public class DeviceInfoServiceImpl implements DeviceInfoService {
+	@Autowired
+	DeviceMapper deviceMapper;
+	
+	@Autowired
+	MultipartHttpServletRequest multipartHttpServletRequest;
+
+	@Override
+	public List<Device> getDevicesInfo(Device device) {
+		// 로그인 후 처음 보는 목록조회 화면일 경우
+		// 상태가 장애인 목록만을 보여준다.
+		return this.deviceMapper.selectAll(device);
+	}
+
+	@Override
+	public Device getDeviceInfo(Device device) {
+		String ip = device.getIp();
+
+		if (ip != null && !"".equals(ip)) {
+			return this.deviceMapper.select(device);
+		}
+
+		return new Device();
+	}
+
+	@Override
+	public void addDeviceInfo(Device device) {
+		// 1. 에이전트로부터 받은 디바이스 정보가 존재하는가?
+		System.out.println(device.getIp() + " / " +  device.getHostName() + " / " + device.getAccessKey());
+		if (device.getIp() != null 
+				&& device.getHostName() != null 
+				&& device.getAccessKey() != null
+				&& !"".equals(device.getIp()) 
+				&& !"".equals(device.getHostName())
+				&& !"".equals(device.getAccessKey())) {
+			// 2. 예-> 디바이스 정보를 상세 조회한다.
+			Device resultDevice = this.deviceMapper.select(new Device(device.getIp()));
+			// 3. 조회 결과가 존재하지 않는가?
+			if (resultDevice == null) {
+				// 4. 예-> 디바이스 정보를 등록한다.
+				this.deviceMapper.insert(device);
+			} else {
+				// 5. 아니오-> 접근키가 일치하고, 상태 값이 'n'인가?
+				if (device.getAccessKey().equals(resultDevice.getAccessKey()) 
+						&& "N".equals(resultDevice.getStatus())) {
+					// 6. 디바이스 정보를 수정한다.				
+					this.deviceMapper.update(new Device(device.getIp(), "Y"));
+				}
+			}
+		}
+	}
+
+	@Override
+	public void editDeviceInfo(Device deivce, TransferHistory transferHistory) {
+		// 1. 수정 정보를 반영한다.
+		Device device = new Device();
+//		if (request.getParameter("ip") != null){
+//			device.setIp(request.getParameter("ip"));
+//			device.setName(request.getParameter("name"));
+//			device.setPlace(request.getParameter("place"));
+//			
+//			this.deviceMapper.update(device);			
+//		}
+		
+		// 2. 영상 파일을 첨부했는가?
+//		multipartHttpServletRequest = (MultipartHttpServletRequest)request;
+//		Iterator<String> iterator = multipartHttpServletRequest.getFileNames();
+//		MultipartFile multipartFile = null;
+//		while(iterator.hasNext()) {
+//			multipartFile = multipartHttpServletRequest.getFile(iterator.next());
+//			if (multipartFile.isEmpty() == false) {
+//				System.out.println("------------- file start -------------"); 
+//				System.out.println("name : "+multipartFile.getName()); 
+//				System.out.println("filename : "+multipartFile.getOriginalFilename()); 
+//				System.out.println("size : "+multipartFile.getSize()); 
+//				System.out.println("-------------- file end --------------\n");
+//			}
+//		}
+			// 3. 예: 디바이스를 상세 조회한다. .
+		
+			// 4. 영상 정보를 전송한다.
+			// 5. 이력을 등록한다. 
+		
+	}
+
+	@Override
+	public void removeDeviceInfo(String ip) {
+		// 1. ip가 존재하는가?
+		if (ip != null && !"".equals(ip)) {
+			// 2. 디바이스 상태를 수정한다.
+			this.deviceMapper.delete(ip);
+		}
+	}
+}

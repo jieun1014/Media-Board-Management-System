@@ -1,0 +1,6 @@
+package com.transfer.video.vtms.device;
+
+import java.io.Serializable;
+
+public class Device implements Serializable {
+}

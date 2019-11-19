@@ -1,0 +1,33 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>영상 파일 전송 관리 시스템</title>
+	</head>
+	<body>
+		<form name="loginForm" action="/login" method="post" onsubmit="return check()">
+			<input type="text" name="id" /><br>
+			<input type="password" name="password" /><br>
+			<div id="warning"></div>
+			<input type="submit" value="로그인" />
+		</form>
+	</body>
+	
+	<script>
+		function check() {
+			if(loginForm.id.value == "") {
+				window.alert('아이디와 비밀번호를 입력하세요.');
+			loginForm.id.focus();
+			return false;
+		  	}
+			else if(loginForm.password.value == "") {
+				window.alert('아이디와 비밀번호를 입력하세요.');
+				loginForm.password.focus();
+				return false;
+			}
+		  	else return true;
+		}
+	</script>
+</html>

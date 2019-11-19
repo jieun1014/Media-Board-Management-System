@@ -1,0 +1,9 @@
+package com.transfer.video.vtms.video;
+
+import java.util.List;
+
+public interface TransferHistoryMapper {
+	public List<TransferHistory> inquiryAll();
+	public TransferHistory inquiry(TransferHistory transferHistory);
+	public void register(TransferHistory transferHistory);
+}

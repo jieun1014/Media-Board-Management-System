@@ -1,0 +1,16 @@
+package com.transfer.video.vtms.device;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface DeviceMapper {
+	public List<Device> inquiryAll(Device device);	
+	public Device inquiry(String ip);	
+//	public void register(Device device);
+//	public void update(Device device);	
+//	public void updateByAuto(List<Device> devices);	
+//	public void updateByManual(Device device);	
+//	public void delete(String ip);
+}

@@ -1,0 +1,34 @@
+package com.transfer.video.vtms.device;
+
+public class VideoInfo {
+	private String videoName;
+	private String videoFile;
+	private String accessKey;
+	
+	public VideoInfo() {
+	}
+	
+	public String getVideoName() {
+		return videoName;
+	}
+	
+	public void setVideoName(String videoName) {
+		this.videoName = videoName;
+	}
+	
+	public String getVideoFile() {
+		return videoFile;
+	}
+	
+	public void setVideoFile(String videoFile) {
+		this.videoFile = videoFile;
+	}
+	
+	public String getAccessKey() {
+		return accessKey;
+	}
+
+	public void setAccessKey(String accessKey) {
+		this.accessKey = accessKey;
+	}
+}

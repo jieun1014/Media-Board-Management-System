@@ -1,0 +1,64 @@
+package com.transfer.video.vtms.video;
+
+import java.io.Serializable;
+
+public class TransferHistory implements Serializable {
+	private String deviceIP;
+	private String videoName;
+	private String transferDate;
+	private double fileSize;
+	private int playTime;
+	private String note;
+
+	public TransferHistory() {
+		
+	}
+
+	public String getDeviceIP() {
+		return deviceIP;
+	}
+
+	public void setDeviceIP(String deviceIP) {
+		this.deviceIP = deviceIP;
+	}
+
+	public String getVideoName() {
+		return videoName;
+	}
+
+	public void setVideoName(String videoName) {
+		this.videoName = videoName;
+	}
+
+	public String getTransferDate() {
+		return transferDate;
+	}
+
+	public void setTransferDate(String transferDate) {
+		this.transferDate = transferDate;
+	}
+
+	public double getFileSize() {
+		return fileSize;
+	}
+
+	public void setFileSize(double fileSize) {
+		this.fileSize = fileSize;
+	}
+
+	public int getPlayTime() {
+		return playTime;
+	}
+
+	public void setPlayTime(int playTime) {
+		this.playTime = playTime;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
+	}
+}

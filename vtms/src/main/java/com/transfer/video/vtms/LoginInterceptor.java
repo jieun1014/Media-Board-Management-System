@@ -1,0 +1,33 @@
+package com.transfer.video.vtms;
+
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+@Repository
+public class LoginInterceptor extends HandlerInterceptorAdapter{
+	@Override
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object Handler) {
+		HttpSession session = request.getSession(false);
+		
+		if (session != null) {
+			if (session.getAttribute("id") == "true") {
+				return true;
+			}
+		}
+		
+		try {
+			response.sendRedirect(request.getContextPath() + "/login");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+}
